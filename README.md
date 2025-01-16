@@ -1,64 +1,88 @@
-# personal-budget-tracker
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Budget Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Personal Budget Tracker</h1>
+    <button onclick="addTransaction()">Add Transaction</button>
+    <button onclick="displayTransactions()">Display Transactions</button>
+    <button onclick="generateReport()">Generate Monthly Report</button>
+    <div id="transactions"></div>
+    <div id="report"></div>
 
-# Prerequisites
-1. Arrays/lists for storage
-2. Loops for calculations
-3. Functions for report generation
+   <script>
+        const transactions = [];
 
-# Step 1: Program Setup
-1. We start with the personal budget tracker program by typing the following code in a new C++ project:
-   
-#include <iostream>
-#include <string>
-#include <iomanip>
-using namespace std;
+        function addTransaction() {
+            const type = prompt("Enter transaction type (Income/Expense):");
+            const category = prompt("Enter category:");
+            const amount = parseFloat(prompt("Enter amount:"));
 
-// Constants
-const int MAX_TRANSACTIONS = 100;
+            if (type && category && !isNaN(amount)) {
+                transactions.push({ type, category, amount });
+                alert("Transaction added successfully.");
+            } else {
+                alert("Invalid input. Please try again.");
+            }
+        }
 
-// Structures
-struct Transaction {
-    string type; // "Income" or "Expense"
-    string category;
-    double amount;
-};
+        function displayTransactions() {
+            let html = "<h2>Transactions</h2>";
+            html += "<table><tr><th>Type</th><th>Category</th><th>Amount</th></tr>";
+            transactions.forEach(transaction => {
+                html += `<tr><td>${transaction.type}</td><td>${transaction.category}</td><td>${transaction.amount.toFixed(2)}</td></tr>`;
+            });
+            html += "</table>";
+            document.getElementById("transactions").innerHTML = html;
+        }
 
-// Function declarations
-int addTransaction(Transaction transactions[], int count);
-void displayTransactions(const Transaction transactions[], int count);
-double calculateTotalIncome(const Transaction transactions[], int count);
-double calculateTotalExpense(const Transaction transactions[], int count);
-double generateReport(const Transaction transactions[], int count);
+        function calculateTotalIncome() {
+            return transactions.reduce((total, transaction) => {
+                return transaction.type === "Income" ? total + transaction.amount : total;
+            }, 0);
+        }
 
-2. This step is for declaring the constant, functions and structure.
-3. There is no output in this step.
+        function calculateTotalExpense() {
+            return transactions.reduce((total, transaction) => {
+                return transaction.type === "Expense" ? total + transaction.amount : total;
+            }, 0);
+        }
 
-# Step 2: Menu System
-1. Add a basic menu system in main:
+        function generateReport() {
+            const totalIncome = calculateTotalIncome();
+            const totalExpense = calculateTotalExpense();
+            const netSavings = totalIncome - totalExpense;
 
-Transaction transactions[MAX_TRANSACTIONS];
-int transactionCount = 0;
-int choice;
-
-do {
-    cout << "\n=== Personal Budget Tracker ===\n";
-    cout << "1. Add Transaction\n";
-    cout << "2. Display Transactions\n";
-    cout << "3. Generate Monthly Report\n";
-    cout << "4. Exit\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    switch (choice) {
-        case 1:
-            transactionCount = addTransaction(transactions, transactionCount);
-            break;
-        case 4:
-            cout << "Exiting the program.\n";
-            break;
-        default:
-            cout << "Invalid choice. Please try again.\n";
-    }
-} while (choice != 4);
-
-2. 
+            let html = "<h2>Monthly Report</h2>";
+            html += `<p>Total Income: $${totalIncome.toFixed(2)}</p>`;
+            html += `<p>Total Expense: $${totalExpense.toFixed(2)}</p>`;
+            html += `<p>Net Savings: $${netSavings.toFixed(2)}</p>`;
+            document.getElementById("report").innerHTML = html;
+        }
+    </script>
+</body>
+</html>
