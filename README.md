@@ -61,4 +61,8 @@ do {
     }
 } while (choice != 4);
 
-2. 
+2. Switch statement is added for the user to navigate through the menu.
+3. Switch statement starts with case 1 which is used to add a new transaction more specifically the type, category and amount.
+4. case 4 is for exiting the program.
+
+# Step 3: 
