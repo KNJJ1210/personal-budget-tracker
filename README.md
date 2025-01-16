@@ -40,7 +40,7 @@ Transaction transactions[MAX_TRANSACTIONS];
 int transactionCount = 0;
 int choice;
 
-do {
+    do {
     cout << "\n=== Personal Budget Tracker ===\n";
     cout << "1. Add Transaction\n";
     cout << "2. Display Transactions\n";
@@ -59,7 +59,7 @@ do {
         default:
             cout << "Invalid choice. Please try again.\n";
     }
-} while (choice != 4);
+      } while (choice != 4);
 
 2. Switch statement is added for the user to navigate through the menu.
 3. Switch statement starts with case 1 which is used to add a new transaction more specifically the type, category and amount.
