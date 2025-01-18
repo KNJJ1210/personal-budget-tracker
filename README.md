@@ -1,7 +1,5 @@
 # personal-budget-tracker
 
-Link: https://knjj1210.github.io/personal-budget-tracker/
-
 # Prerequisites
 1. Arrays/lists for storage
 2. Loops for calculations
