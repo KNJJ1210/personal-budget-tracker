@@ -28,62 +28,68 @@
 </head>
 <body>
     <h1>Personal Budget Tracker</h1>
-    <form method="post">
+    <form method="POST" action="">
+        <h2>Add Transaction</h2>
         <label for="type">Transaction Type:</label>
-        <select name="type" id="type">
+        <select name="type" id="type" required>
             <option value="Income">Income</option>
             <option value="Expense">Expense</option>
-        </select>
-        <br>
+        </select><br><br>
+
         <label for="category">Category:</label>
-        <input type="text" name="category" id="category" required>
-        <br>
+        <input type="text" name="category" id="category" required><br><br>
+
         <label for="amount">Amount:</label>
-        <input type="number" step="0.01" name="amount" id="amount" required>
-        <br>
+        <input type="number" name="amount" id="amount" step="0.01" required><br><br>
+
         <button type="submit" name="add">Add Transaction</button>
-        <button type="submit" name="display">Display Transactions</button>
-        <button type="submit" name="report">Generate Monthly Report</button>
     </form>
 
     <?php
     session_start();
 
+    // Initialize transactions if not already set
     if (!isset($_SESSION['transactions'])) {
         $_SESSION['transactions'] = [];
     }
 
+    // Handle adding a transaction
     if (isset($_POST['add'])) {
         $type = $_POST['type'];
         $category = $_POST['category'];
-        $amount = $_POST['amount'];
+        $amount = floatval($_POST['amount']);
 
-        $_SESSION['transactions'][] = [
-            'type' => $type,
-            'category' => $category,
-            'amount' => $amount
-        ];
-
-        echo "<p>Transaction added successfully.</p>";
+        if ($type && $category && $amount > 0) {
+            $_SESSION['transactions'][] = [
+                'type' => $type,
+                'category' => $category,
+                'amount' => $amount
+            ];
+            echo "<p>Transaction added successfully.</p>";
+        } else {
+            echo "<p>Invalid input. Please try again.</p>";
+        }
     }
 
-    if (isset($_POST['display'])) {
+    // Display transactions
+    if (!empty($_SESSION['transactions'])) {
         echo "<h2>Transactions</h2>";
         echo "<table><tr><th>Type</th><th>Category</th><th>Amount</th></tr>";
         foreach ($_SESSION['transactions'] as $transaction) {
-            echo "<tr><td>{$transaction['type']}</td><td>{$transaction['category']}</td><td>{$transaction['amount']}</td></tr>";
+            echo "<tr><td>{$transaction['type']}</td><td>{$transaction['category']}</td><td>" . number_format($transaction['amount'], 2) . "</td></tr>";
         }
         echo "</table>";
     }
 
-    if (isset($_POST['report'])) {
+    // Generate Monthly Report
+    if (!empty($_SESSION['transactions'])) {
         $totalIncome = 0;
         $totalExpense = 0;
 
         foreach ($_SESSION['transactions'] as $transaction) {
-            if ($transaction['type'] == 'Income') {
+            if ($transaction['type'] === 'Income') {
                 $totalIncome += $transaction['amount'];
-            } else {
+            } else if ($transaction['type'] === 'Expense') {
                 $totalExpense += $transaction['amount'];
             }
         }
