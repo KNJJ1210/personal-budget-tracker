@@ -28,61 +28,73 @@
 </head>
 <body>
     <h1>Personal Budget Tracker</h1>
-    <button onclick="addTransaction()">Add Transaction</button>
-    <button onclick="displayTransactions()">Display Transactions</button>
-    <button onclick="generateReport()">Generate Monthly Report</button>
-    <div id="transactions"></div>
-    <div id="report"></div>
+    <form method="post">
+        <label for="type">Transaction Type:</label>
+        <select name="type" id="type">
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+        </select>
+        <br>
+        <label for="category">Category:</label>
+        <input type="text" name="category" id="category" required>
+        <br>
+        <label for="amount">Amount:</label>
+        <input type="number" step="0.01" name="amount" id="amount" required>
+        <br>
+        <button type="submit" name="add">Add Transaction</button>
+        <button type="submit" name="display">Display Transactions</button>
+        <button type="submit" name="report">Generate Monthly Report</button>
+    </form>
 
-    <script>
-        const transactions = [];
+    <?php
+    session_start();
 
-        function addTransaction() {
-            const type = prompt("Enter transaction type (Income/Expense):");
-            const category = prompt("Enter category:");
-            const amount = parseFloat(prompt("Enter amount:"));
+    if (!isset($_SESSION['transactions'])) {
+        $_SESSION['transactions'] = [];
+    }
 
-            if (type && category && !isNaN(amount)) {
-                transactions.push({ type, category, amount });
-                alert("Transaction added successfully.");
+    if (isset($_POST['add'])) {
+        $type = $_POST['type'];
+        $category = $_POST['category'];
+        $amount = $_POST['amount'];
+
+        $_SESSION['transactions'][] = [
+            'type' => $type,
+            'category' => $category,
+            'amount' => $amount
+        ];
+
+        echo "<p>Transaction added successfully.</p>";
+    }
+
+    if (isset($_POST['display'])) {
+        echo "<h2>Transactions</h2>";
+        echo "<table><tr><th>Type</th><th>Category</th><th>Amount</th></tr>";
+        foreach ($_SESSION['transactions'] as $transaction) {
+            echo "<tr><td>{$transaction['type']}</td><td>{$transaction['category']}</td><td>{$transaction['amount']}</td></tr>";
+        }
+        echo "</table>";
+    }
+
+    if (isset($_POST['report'])) {
+        $totalIncome = 0;
+        $totalExpense = 0;
+
+        foreach ($_SESSION['transactions'] as $transaction) {
+            if ($transaction['type'] == 'Income') {
+                $totalIncome += $transaction['amount'];
             } else {
-                alert("Invalid input. Please try again.");
+                $totalExpense += $transaction['amount'];
             }
         }
 
-        function displayTransactions() {
-            let html = "<h2>Transactions</h2>";
-            html += "<table><tr><th>Type</th><th>Category</th><th>Amount</th></tr>";
-            transactions.forEach(transaction => {
-                html += `<tr><td>${transaction.type}</td><td>${transaction.category}</td><td>${transaction.amount.toFixed(2)}</td></tr>`;
-            });
-            html += "</table>";
-            document.getElementById("transactions").innerHTML = html;
-        }
+        $netSavings = $totalIncome - $totalExpense;
 
-        function calculateTotalIncome() {
-            return transactions.reduce((total, transaction) => {
-                return transaction.type === "Income" ? total + transaction.amount : total;
-            }, 0);
-        }
-
-        function calculateTotalExpense() {
-            return transactions.reduce((total, transaction) => {
-                return transaction.type === "Expense" ? total + transaction.amount : total;
-            }, 0);
-        }
-
-        function generateReport() {
-            const totalIncome = calculateTotalIncome();
-            const totalExpense = calculateTotalExpense();
-            const netSavings = totalIncome - totalExpense;
-
-            let html = "<h2>Monthly Report</h2>";
-            html += `<p>Total Income: $${totalIncome.toFixed(2)}</p>`;
-            html += `<p>Total Expense: $${totalExpense.toFixed(2)}</p>`;
-            html += `<p>Net Savings: $${netSavings.toFixed(2)}</p>`;
-            document.getElementById("report").innerHTML = html;
-        }
-    </script>
+        echo "<h2>Monthly Report</h2>";
+        echo "<p>Total Income: $" . number_format($totalIncome, 2) . "</p>";
+        echo "<p>Total Expense: $" . number_format($totalExpense, 2) . "</p>";
+        echo "<p>Net Savings: $" . number_format($netSavings, 2) . "</p>";
+    }
+    ?>
 </body>
 </html>
